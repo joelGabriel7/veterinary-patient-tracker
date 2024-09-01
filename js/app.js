@@ -15,9 +15,11 @@ fechaInput.addEventListener('change', datosCita);
 sintomasInput.addEventListener('change', datosCita);
 formulario.addEventListener('submit', submitCita)
 
+let editando = false;
 
 // Objeto de citas
 const citaObj = {
+    id: generarIds(),
     paciente: '',
     propietario: '',
     email: '',
@@ -73,6 +75,7 @@ class AdminCitas {
     agregar(cita) {
         this.citas = [...this.citas, cita];
         this.mostrar();
+        console.log(this.citas)
     }
 
     mostrar() {
@@ -151,13 +154,19 @@ function submitCita(e) {
         notificacion.mostrar();
         return;
     }
-    cita.agregar({ ...citaObj })
-    const notificacion = new Notificacion({
-        texto: 'Paciente Registrado',
-        tipo: 'exito'
-    })
 
-    notificacion.mostrar();
+    if (editando) {
+        console.log('editando registro')
+    } else {
+        cita.agregar({ ...citaObj })
+        const notificacion = new Notificacion({
+            texto: 'Paciente Registrado',
+            tipo: 'exito'
+        })
+        notificacion.mostrar();
+    }
+
+      
     formulario.reset()
     reinciarObjectoCita()
 };
@@ -172,6 +181,7 @@ function reinciarObjectoCita() {
     'Es lo mismo'
 
     Object.assign(citaObj, {
+        id: generarIds(),
         paciente: '',
         propietario: '',
         email: '',
@@ -181,7 +191,19 @@ function reinciarObjectoCita() {
 
 }
 
+
+function generarIds() {
+    return Math.random().toString(36).substring(2) + Date.now();
+}
+
 function cargarEdicion(cita) {
-    console.log('Diste click', cita)
+    
+    Object.assign(citaObj, cita)
+    pacienteInput.value = cita.paciente
+    propietarioInput.value = cita.propietario
+    emailInput.value = cita.email
+    fechaInput.value = cita.fecha
+    sintomasInput.value = cita.sintomas
+    editando = true
 }
 
