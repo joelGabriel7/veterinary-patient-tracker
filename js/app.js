@@ -134,7 +134,13 @@ function submitCita(e) {
         notificacion.mostrar();
         return;
     }
-    cita.agregar(citaObj)
+    cita.agregar({...citaObj})
+    const notificacion = new Notificacion({
+        texto: 'Paciente Registrado',
+        tipo: 'exito'
+    })
+
+    notificacion.mostrar();
     formulario.reset()  
     reinciarObjectoCita()
 };
