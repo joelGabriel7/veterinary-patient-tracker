@@ -4,7 +4,9 @@ const propietarioInput = document.querySelector('#propietario');
 const emailInput = document.querySelector('#email');
 const fechaInput = document.querySelector('#fecha');
 const sintomasInput = document.querySelector('#sintomas');
+
 const formulario = document.querySelector('#formulario-cita');
+const formularioInput = document.querySelector('#formulario-cita input[type="submit"]');
 const contenedorCita = document.querySelector('#citas')
 
 // Eventos 
@@ -32,7 +34,8 @@ class Notificacion {
 
     constructor({ texto, tipo }) {
         this.texto = texto,
-            this.tipo = tipo
+        this.tipo = tipo
+        this.mostrar()
     }
 
     mostrar() {
@@ -67,6 +70,7 @@ class Notificacion {
 }
 
 class AdminCitas {
+
     constructor() {
         this.citas = []
         console.log(this.citas)
@@ -75,7 +79,11 @@ class AdminCitas {
     agregar(cita) {
         this.citas = [...this.citas, cita];
         this.mostrar();
-        console.log(this.citas)
+    }
+
+    editar(citaActualizada) {
+        this.citas = this.citas.map(cita=> cita.id === citaActualizada.id ? citaActualizada : cita);
+        this.mostrar();
     }
 
     mostrar() {
@@ -147,28 +155,32 @@ const cita = new AdminCitas();
 function submitCita(e) {
     e.preventDefault();
     if (Object.values(citaObj).some(valor => valor.trim() === '')) {
-        const notificacion = new Notificacion({
+        new Notificacion({
             texto: 'Todos los campos son obligatorios',
             tipo: 'error'
         })
-        notificacion.mostrar();
         return;
     }
 
     if (editando) {
-        console.log('editando registro')
+        cita.editar({...citaObj})
+        new Notificacion({
+            texto: 'Guardado correctamente',
+            tipo: 'exito'
+        })
     } else {
         cita.agregar({ ...citaObj })
-        const notificacion = new Notificacion({
+        new Notificacion({
             texto: 'Paciente Registrado',
             tipo: 'exito'
         })
-        notificacion.mostrar();
     }
 
       
     formulario.reset()
     reinciarObjectoCita()
+    formularioInput.value= 'Registrar paciente'
+    editando=false;
 };
 
 function reinciarObjectoCita() {
@@ -205,5 +217,6 @@ function cargarEdicion(cita) {
     fechaInput.value = cita.fecha
     sintomasInput.value = cita.sintomas
     editando = true
+    formularioInput.value= 'Guardar Cambios'
 }
 
